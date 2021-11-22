@@ -50,36 +50,39 @@ def main():
     square_selected = ()
     clicks = []
     gameOver = False
+    drawText(screen, 'here')
+
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-                col = location[0] // square_size
-                row = location[1] // square_size
-                if square_selected == (row, col):
-                    square_selected = ()
-                    clicks = []
-                else:
-                    square_selected = (row, col)
-                    clicks.append(square_selected)
-                if len(clicks) == 2:  # sau 2 lần click chuột thì thực hiện nước đi
-                    move = ChessEngine.Move(clicks[0], clicks[1], gs.board)
-                    print(move.getChessNotation())
-                    for i in range(len(validMoves)):
-                        if move == validMoves[i]:
-                            gs.makeMove(validMoves[i])
-                            moveMade = True
-                            square_selected = ()
-                            clicks = []
-                    if not moveMade:
-                        clicks = [square_selected]
+                if not gameOver:
+                    location = p.mouse.get_pos()
+                    col = location[0] // square_size
+                    row = location[1] // square_size
+                    if square_selected == (row, col):
+                        square_selected = ()
+                        clicks = []
+                    else:
+                        square_selected = (row, col)
+                        clicks.append(square_selected)
+                    if len(clicks) == 2:  # sau 2 lần click chuột thì thực hiện nước đi
+                        move = ChessEngine.Move(clicks[0], clicks[1], gs.board)
+                        print(move.getChessNotation())
+                        for i in range(len(validMoves)):
+                            if move == validMoves[i]:
+                                gs.makeMove(validMoves[i])
+                                moveMade = True
+                                square_selected = ()
+                                clicks = []
+                        if not moveMade:
+                            clicks = [square_selected]
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gs.undoMove()
                     moveMade = True
-                if e.key == p.K_r:  # reset bàn cờ khi bấm r
+                if e.key == p.K_r:  # reset game khi nhấn r
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
                     square_selected = ()
@@ -92,42 +95,41 @@ def main():
 
         drawGameState(screen, gs, validMoves, square_selected)
 
-        if gs.checkmate:
+        if gs.checkMate:
             gameOver = True
             if gs.wturn:
                 drawText(screen, 'Black wins')
             else:
                 drawText(screen, 'White wins')
-        elif gs.stalemate:
+        elif gs.staleMate:
             gameOver = True
             drawText(screen, 'Draw')
 
         clock.tick(max_fps)
         p.display.flip()
 
-# highlight các ô
 
-
-def highLightSquare(screen, gs, validMoves, square_selected):
+def highlightSquares(screen, gs, validMoves, square_selected):
     if square_selected != ():
         r, c = square_selected
-        if gs.board[r][c] == ('w' if gs.wturn else 'b'):
+        # ô được chọn là 1 quân có thể di chuyển
+        if gs.board[r][c][0] == ('w' if gs.wturn else 'b'):
             # highlight ô được chọn
-            s = p.surface((square_size, square_size))
-            s.set_alpha(100)
+            s = p.Surface((square_size, square_size))
+            s.set_alpha(100)  # transparency value
             s.fill(p.Color('blue'))
             screen.blit(s, (c*square_size, r*square_size))
-            # highlight ô đi đến
-            s.fill(p.Color('green'))
+            # highlight các ô có thể đi
+            s.fill(p.Color('yellow'))
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
-                    screen.blit(s, (move.endCol*square_size,
-                                move.endCol*square_size))
+                    screen.blit(s, (square_size*move.endCol,
+                                square_size*move.endRow))
 
 
 def drawGameState(screen, gs, validMoves, square_selected):
     drawBoard(screen)
-    highLightSquare(screen, gs, validMoves, square_selected)
+    highlightSquares(screen, gs, validMoves, square_selected)
     drawPieces(screen, gs.board)
 
 
@@ -150,11 +152,11 @@ def drawPieces(screen, board):
 
 
 def drawText(screen, text):
-    font = p.font.SysFont("Helvitca", 32, True, False)
-    textObject = font.render(text, 0, p.Color('blue'))
-    textlocation = p.Rect(0, 0, width, height).move(
-        width/2 - textObject.get_width()/2, height/2 - textObject.get_height()/2)
-    screen.blit(textObject, textlocation)
+    font = p.font.SysFont('Helvitca', 32, True, False)
+    textObject = font.render(text, 0, p.Color('black'))
+    textLocation = p.Rect(0, 0, width, height).move(
+        width/2 - textObject.get_width()//2, height/2 - textObject.get_height()//2)
+    screen.blit(textObject, textLocation)
 
 
 if __name__ == '__main__':

@@ -23,8 +23,8 @@ class GameState():
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
-        self.checkmate = False  # quân vua bị chiếu và không còn nước nào để đi
-        self.stalemate = False  # quân Vua không có nước nào để đi nhưng không bị chiếu
+        self.checkMate = False  # quân vua bị chiếu và không còn nước nào để đi
+        self.staleMate = False  # quân Vua không có nước nào để đi nhưng không bị chiếu
 
     def makeMove(self, move):
         self.board[move.startRow][move.startCol] = '-'
@@ -75,8 +75,8 @@ class GameState():
             else:
                 self.staleMate == True
         else:
-            self.checkmate == False
-            self.stalemate == False
+            self.checkMate == False
+            self.staleMate == False
 
         return moves
 
