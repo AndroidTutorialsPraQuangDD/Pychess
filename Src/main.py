@@ -9,7 +9,6 @@ square_size = width // size
 max_fps = 15
 images = {}
 
-
 def loadImages():
     images['wP'] = p.transform.scale(p.image.load(
         'quan_co/wP.png'), (square_size, square_size))
@@ -69,7 +68,7 @@ def main():
                         clicks.append(square_selected)
                     if len(clicks) == 2:  # sau 2 lần click chuột thì thực hiện nước đi
                         move = ChessEngine.Move(clicks[0], clicks[1], gs.board)
-                        print(move.getChessNotation())
+                        # print(move.getChessNotation())
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])
